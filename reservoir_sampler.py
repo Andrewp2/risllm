@@ -71,7 +71,7 @@ class ReservoirLogitsProcessor(LogitsProcessor):
         if keep_mask.any():
             rows, cols = keep_mask.nonzero(as_tuple=True)
             new_tokens[rows, cols] = self.tokens[rows, cols]
-            new_p_prev[rows, cols] = self.p_prev[rows, cols]
+            new_p_prev[rows, cols] = p_curr[rows, cols]
 
         # 3) duplicate mask – safe even if a row kept zero tokens -------
         sentinel_mask = new_tokens.eq(-1)
@@ -114,7 +114,7 @@ class ReservoirLogitsProcessor(LogitsProcessor):
 
         # 7) project reservoir back to logits ---------------------------
         new_scores = torch.full_like(scores, float('-inf'))
-        # new_scores.scatter_(1, self.tokens, torch.log(probs.gather(1, self.tokens) + 1e-30))
+        new_scores.scatter_(1, self.tokens, torch.log(probs.gather(1, self.tokens) + 1e-30))
         # Use the current importance weights for sampling
-        new_scores.scatter_(1, self.tokens, torch.log(w + 1e-30))
+        # new_scores.scatter_(1, self.tokens, torch.log(w + 1e-30))
         return new_scores
