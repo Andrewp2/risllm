@@ -1,0 +1,26 @@
+[project]
+name = "risllm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "torch==2.6.0+cu118",
+    "torchvision==0.21.0+cu118",
+    "torchaudio==2.6.0+cu118",
+    "datasets==3.5.0",
+    "evaluate==0.4.3",
+    "transformers==4.51.3",
+    "accelerate>=1.6.0",
+    "tqdm>=4.67.1",
+]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch" }]
+torchvision = [{ index = "pytorch" }]
+torchaudio = [{ index = "pytorch" }]
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu118"
+explicit = true
