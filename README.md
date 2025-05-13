@@ -26,6 +26,6 @@ Completion 1: "**The largest city in France is the capital.** _Marseille is the 
 
 Completion 2: "_The largest city in France is not the capital._ **Paris is the largest city in France.** Marseille is the capital of France."
 
-Correct completion: "Usually the largest city is the capital. Paris is the biggest city in France. Paris is the capital of France."
+Correct completion: "The largest city in France is the capital. Paris is the largest city in France. Paris is the capital of France."
 
 [1] Tree of Thought https://arxiv.org/abs/2305.10601
