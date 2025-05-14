@@ -3,14 +3,16 @@ from transformers import LogitsProcessor
 
 
 class ReservoirLogitsProcessor(LogitsProcessor):
-    """Vectorised CRIS‑style reservoir sampler with cross‑step reuse.
+    """Vectorised
+    Conditional Resampled Importance Sampling (CRIS)
+    CRIS-style reservoir sampler with cross-step reuse.
 
     **Key features**
     ---------------
-    * Fully‑vectorised acceptance test & refill – no Python loops over batch rows.
-    * Safe duplicate‑mask construction – works even when a batch row keeps **zero** tokens.
+    * Fully-vectorised acceptance test & refill - no Python loops over batch rows.
+    * Safe duplicate-mask construction - works even when a batch row keeps **zero** tokens.
     * `reset()` method to clear internal state so the same object can be reused for
-      multiple *independent* decoding runs (e.g. across prompts during grid‑search).
+      multiple *independent* decoding runs (e.g. across prompts during grid-search).
     """
 
     def __init__(self, K: int = 64, R: int = 32, device=None):
@@ -25,13 +27,13 @@ class ReservoirLogitsProcessor(LogitsProcessor):
     def reset(self):
         """Clear the reservoir so the processor can be reused safely.
 
-        Call this **between independent decoding runs** – for instance, once
+        Call this **between independent decoding runs** - for instance, once
         per prompt inside a loop.  (If you create a *fresh* processor per
         prompt you don't need this.)
         """
-        self.tokens = None  # (B, R) long – token ids in reservoir
-        self.p_prev = None  # (B, R) float – probs from previous step
-        self.w_max = None   # (B,)   float – max importance weight per batch
+        self.tokens = None  # (B, R) long - token ids in reservoir
+        self.p_prev = None  # (B, R) float - probs from previous step
+        self.w_max = None   # (B,)   float - max importance weight per batch
 
     # ------------------------------------------------------------------
     # private helpers ---------------------------------------------------
@@ -73,13 +75,13 @@ class ReservoirLogitsProcessor(LogitsProcessor):
             new_tokens[rows, cols] = self.tokens[rows, cols]
             new_p_prev[rows, cols] = p_curr[rows, cols]
 
-        # 3) duplicate mask – safe even if a row kept zero tokens -------
+        # 3) duplicate mask - safe even if a row kept zero tokens -------
         sentinel_mask = new_tokens.eq(-1)
         idx = new_tokens.clamp(min=0)                           # replace -1 → 0
         have_mask = torch.zeros((B, V), dtype=torch.bool, device=self.device)
         have_mask.scatter_(1, idx, ~sentinel_mask)
 
-        # 4) refill from top‑K proposals -------------------------------
+        # 4) refill from top-K proposals -------------------------------
         topk_p, topk_tok = probs.topk(self.K, dim=-1)           # (B, K)
         for k in range(self.K):
             need_rows = (new_tokens == -1).any(1)               # rows still with holes
