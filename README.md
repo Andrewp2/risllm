@@ -1,12 +1,25 @@
-# Resampled Importance Sampling for Large Language Models
+# Resampled Importance Sampling is All You Need
 
 ## Authors
 Andrew Peterson
 
-## Main Idea
+## Abstract
 
-Current Large Language Models use naive versions of sampling and search where an assumption is made that different branches
-of the same tree of thought are completely independent.
+We present Resampled Importance Sampling for Large Language Models (RIS), a novel method to improve efficiency for test-time inference. Resampled Importance Sampling, a technique from the field of computer graphics, allows for massive reuse across a single Tree of Thought allowing LLMs to search deeper, discover more important lines of reasoning, and enables new forms of compositionality.
+
+Our experiments show that RIS significantly enhances language model's problem-sovling abilities on three benchmarks: MMLU, MATH-500, and ARC-AGI 2. RIS does not require any retraining or fine-tuning, and this paper comes with an open source repository with compatibility with HuggingFace Transformers.
+
+
+
+
+
+
+
+
+What if we combined Resampled Importance Sampling with Large Language Models using Tree of Thought?
+
+
+Current Large Language Models use naive versions of sampling and search where an assumption is made that different branches of the same tree of thought are completely independent.
 
 To make the problem apparent, consider the following mate-in-5 chess puzzle:
 
@@ -16,7 +29,7 @@ To make the problem apparent, consider the following mate-in-5 chess puzzle:
 
 ![Chess Puzzle](image.png)
 
-Even on max settings on lichess.org with Stockfish 16 (NNUE) it struggles at first to find a guaranteed mate, and then even more to find the mate in 5. Dumber chess engines can find the mate quickly because they perform a dumber, more brute-force search, and Stockfish 17 can find it realtively quickly based on having a larger NNUE.
+Even on max settings on lichess.org with Stockfish 16 (NNUE) it struggles at first to find a guaranteed mate, and then even more to find the mate in 5. Less sophisticated chess engines can find the mate quickly because they perform a dumber, more brute-force search, and Stockfish 17 can find it realtively quickly based on having a larger NNUE.
 
 Example on how mixing at different levels can produce better outcome
 
