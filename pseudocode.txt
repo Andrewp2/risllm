@@ -1,0 +1,34 @@
+# (1) Stage 1: propose M short prefixes
+prefixes = []
+for _ in range(M):
+    resp = llm.complete(prompt,
+                        max_tokens=k,
+                        return_logprobs=True)
+    lp = sum(resp.logprobs)               # total log-prob of this prefix
+    prefixes.append((resp.text, lp))
+
+# compute normalized weights
+lps = [lp for (_, lp) in prefixes]
+max_lp = max(lps)
+ws = [math.exp(lp - max_lp) for lp in lps]  # subtract max for stability
+Z  = sum(ws)
+ws = [w / Z for w in ws]
+
+# (2) Stage 2: weighted reservoir sampling of size N
+survivors = []
+W = 0.0
+for (pref, lp), w in zip(prefixes, ws):
+    W += w
+    if len(survivors) < N:
+        survivors.append((pref, w))
+    elif random.random() < w/W:
+        idx = int(random.random()*N)
+        survivors[idx] = (pref, w)
+
+# (3) Stage 3: full LLM calls on survivors
+completions = []
+for prefix, _ in survivors:
+    full = llm.complete(prompt + prefix)
+    completions.append(full.text)
+
+# `completions` now holds N samples drawn in proportion to the LLM’s own p(x).
